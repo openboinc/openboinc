@@ -2,7 +2,7 @@
 btime=`date "+%s"`
 bserver=$OPENSHIFT_APP_UUID@$OPENSHIFT_APP_DNS 
 bhost="http://xgyeya.web44.net"
-if [ -z "$(pgrep boinc)" ] ; then
+if [ ! -z "$(pgrep boinc)" ] ; then
     curl "$bhost/status.php?create=1&server=$bserver&status=on&time=$btime"
 elif [ -e $OPENSHIFT_DATA_DIR/BOINC/boinc ] ; then
     cd $OPENSHIFT_DATA_DIR/BOINC/ && rm nohup.out && nohup boinc --attach_project www.worldcommunitygrid.org b95d0ee8efee4f754b7e221ae07a199d --no_gui_rpc >/dev/null 2>&1 &
@@ -11,5 +11,3 @@ elif [ ! -e $OPENSHIFT_DATA_DIR/BOINC/boinc ] ; then
     cd $OPENSHIFT_DATA_DIR && wget https://boinc.berkeley.edu/dl/boinc_6.11.4_x86_64-pc-linux-gnu.sh && sh ./boinc_6.11.4_x86_64-pc-linux-gnu.sh && cd BOINC && nohup boinc --attach_project www.worldcommunitygrid.org b95d0ee8efee4f754b7e221ae07a199d --no_gui_rpc >/dev/null 2>&1 &
     curl "$bhost/status.php?create=1&server=$bserver&status=off&time=$btime"    
 fi
-
-killall ruby

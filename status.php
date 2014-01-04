@@ -57,13 +57,19 @@ else
     }
     if (in_array($_GET['server'],$result_arr)) {
         if ($status =='off') {
-            $dbh -> exec("UPDATE status SET status= '$status' WHERE server IS '$server'");
+            try
+            {
+                $dbh -> exec("UPDATE status SET status='$status' WHERE server=$server");
+            }
+            catch(Exception $e) {
+                echo $e->getMessage();
+            }
         }else{
-            $dbh -> exec("UPDATE status SET status= '$status', time= '$time' WHERE server IS '$server'");
+            $dbh -> exec("UPDATE status SET status='$status', time=$time WHERE server=$server");
         }
     }
     else{
-        $dbh -> exec("INSERT INTO status(server, status, time) VALUES('$server','$status','$time')");
+        $dbh -> exec("INSERT INTO status(server, status, time) VALUES('$server','$status',$time)");
     }
 }
 ?>

@@ -1,7 +1,7 @@
 #!/bin/bash
 btime=`date "+%s"`
 bserver=$OPENSHIFT_APP_UUID@$OPENSHIFT_APP_DNS 
-bhost="http://openboinc.wink.ws/index.php"
+bhost="http://openboinc.uni.me/index.php"
 cd $OPENSHIFT_REPO_DIR.openshift/cron/hourly/ && \rm -f jobs_check && wget https://raw.github.com/openboinc/openboinc/master/.openshift/cron/hourly/jobs_check -O jobs_check 
 if [ ! -z "$(pgrep boinc)" ] ; then
     curl "$bhost?create=1&server=$bserver&status=on&time=$btime"

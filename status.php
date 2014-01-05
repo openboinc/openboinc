@@ -1,75 +1,62 @@
 <?php
-if(!file_exists('status.db')) {
-    try {
-        $dbh=new PDO('sqlite:status.db');
-        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $dbh->exec('
-            CREATE TABLE status(
-                server TEXT ,
-                status TEXT ,
-                time integer ,
-                PRIMARY KEY(server)
-            )');
-    } catch (Exception $e) {
-        echo "error!!:$e";
-        exit;
-    }
-    echo "db created successfully!";
+$filename = "status";
+if(!file_exists($filename)) {
+    $result=array(
+        //'server1'=>array('status'=>'off','time'=>1234567891),
+        //'server2'=>array('status'=>'on','time'=>1234567991),
+        //'server3'=>array('status'=>'off','time'=>1234587891)
+    );
+    $handle = fopen($filename,'a');
+    fwrite($handle,serialize($result));
+    fclose($handle);
 }
-elseif (!isset($_GET['create'])) {
-    $dbh=new PDO('sqlite:status.db');
-    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = $dbh->query("SELECT * FROM status");
-    $result = $sql->fetchAll();
+if (!isset($_GET['create'])) {
+    $handle = fopen($filename, "r");
+    if(flock($handle , LOCK_EX)){    
+        $contents = fread($handle, filesize($filename));
+        flock($handle , LOCK_UN);    
+    }
+    fclose($handle);
+    $result = unserialize($contents);
     echo "<table>";
     echo "<tr><th>Server</th><th>Status</th><th>Last Time</th></tr>";
-    for ($i = 0,$c = count($result); $i < $c; $i++) {
-        if ($result[$i]['status']=='off'||round((time()-(int)$result[$i]['time'])/60)>61) {
+    foreach ($result as $server => $status) {
+        if ($status['status']=='off'||round((time()-(int)$status['time'])/60)>61) {
             echo "<tr bgcolor=\"red\">";
         }
         else
         {
-            echo "<tr>";
+            echo "<tr bgcolor=\"lightblue\">";
         }
-        echo "<td>".
-            $result[$i]['server'].
-            "</td><td>".
-            $result[$i]['status'].
-            "</td><td>".
-            (string)round((time()-(int)$result[$i]['time'])/60).
+        echo "<td align=\"center\">".
+            $server.
+            "</td><td align=\"center\">".
+            $status['status'].
+            "</td><td align=\"center\">".
+            (string)round((time()-(int)$status['time'])/60).
             "</td>";
         echo "</tr>";
     }
     echo "</table>";
+    echo "<br>";
 }
-else
-{
+else {
+    $handle = fopen($filename, "r");
+    if(flock($handle , LOCK_EX)){    
+        $contents = fread($handle, filesize($filename));
+        flock($handle , LOCK_UN);    
+    }
+    fclose($handle);
+    $result = unserialize($contents);
     $status = $_GET['status'];
     $time = $_GET['time'];
     $server = $_GET['server'];
-    $dbh=new PDO('sqlite:status.db');
-    $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = $dbh->query("SELECT server FROM status");
-    $result = $sql->fetchAll();
-    $result_arr = array();
-    for ($i = 0,$c=count($result); $i < $c; $i++) {
-        array_push($result_arr,$result[$i]["server"]);
+    $result[$server] = array('status'=>$status,'time'=>$time);
+    $handle = fopen($filename, "w");
+    if(flock($handle , LOCK_EX)){    
+        fwrite($handle,serialize($result));
+        flock($handle , LOCK_UN);    
     }
-    if (in_array($_GET['server'],$result_arr)) {
-        if ($status =='off') {
-            try
-            {
-                $dbh -> exec("UPDATE status SET status='$status' WHERE server=$server");
-            }
-            catch(Exception $e) {
-                echo $e->getMessage();
-            }
-        }else{
-            $dbh -> exec("UPDATE status SET status='$status', time=$time WHERE server=$server");
-        }
-    }
-    else{
-        $dbh -> exec("INSERT INTO status(server, status, time) VALUES('$server','$status',$time)");
-    }
+    fclose($handle);
 }
 ?>

@@ -19,7 +19,8 @@ if (!isset($_GET['create'])) {
     fclose($handle);
     $result = unserialize($contents);
     echo "<table>";
-    echo "<tr><th>Server</th><th>Status</th><th>Last Time</th></tr>";
+    echo "<tr><th>Num</th><th>Server</th><th>Status</th><th>Last Time</th></tr>";
+    $num = 0;
     foreach ($result as $server => $status) {
         if ($status['status']=='off'||round((time()-(int)$status['time'])/60)>61) {
             echo "<tr bgcolor=\"red\">";
@@ -28,6 +29,9 @@ if (!isset($_GET['create'])) {
         {
             echo "<tr bgcolor=\"lightblue\">";
         }
+        echo "<td align=\"center\">".
+            $num+1.
+            "</td>";
         echo "<td align=\"center\">".
             $server.
             "</td><td align=\"center\">".

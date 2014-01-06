@@ -22,6 +22,7 @@ if (!isset($_GET['create'])) {
     echo "<tr><th>Num</th><th>Server</th><th>Status</th><th>Last Time</th></tr>";
     $num = 0;
     foreach ($result as $server => $status) {
+        $num = $num+1;
         if ($status['status']=='off'||round((time()-(int)$status['time'])/60)>61) {
             echo "<tr bgcolor=\"red\">";
         }
@@ -30,7 +31,7 @@ if (!isset($_GET['create'])) {
             echo "<tr bgcolor=\"lightblue\">";
         }
         echo "<td align=\"center\">".
-            $num+1.
+            (string)$num.
             "</td>";
         echo "<td align=\"center\">".
             $server.

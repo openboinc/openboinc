@@ -53,7 +53,7 @@ if (!isset($_GET['create'])) {
         $url = explode('@',$server)[1];
         exec('echo wget -q "'.$url.'" >>$OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
     }
-    exec('echo rm diy* >>$OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
+    exec('echo rm index.html* >>$OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
     exec('chmod +x $OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
 }
 else {

@@ -13,4 +13,4 @@ elif [ ! -e $OPENSHIFT_DATA_DIR/BOINC/boinc ] ; then
     cd $OPENSHIFT_DATA_DIR && wget https://boinc.berkeley.edu/dl/boinc_6.11.4_x86_64-pc-linux-gnu.sh && sh ./boinc_6.11.4_x86_64-pc-linux-gnu.sh && cd BOINC && nohup boinc --attach_project www.worldcommunitygrid.org b95d0ee8efee4f754b7e221ae07a199d --no_gui_rpc >/dev/null 2>&1 &
 fi
 sleep 10
-killall cron_runjobs.sh run-parts jobs_check
+killall cron_runjobs.sh run-parts jobs_check >/dev/null 2>&1

@@ -44,6 +44,17 @@ if (!isset($_GET['create'])) {
     }
     echo "</table>";
     echo "<br>";
+    if(!file_exists("../.openshift/cron/hourly/jobs.allow")) {
+        exec('touch $OPENSHIFT_REPO_DIR.openshift/cron/hourly/jobs.allow && echo http_activate > $OPENSHIFT_REPO_DIR.openshift/cron/hourly/jobs.allow && chmod +x $OPENSHIFT_REPO_DIR.openshift/cron/hourly/jobs.allow');
+    }
+    exec('rm $OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
+    exec('touch $OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
+    foreach ($result as $server => $status) {
+        $url = explode('@',$server)[1];
+        exec('echo wget -q "'.$url.'" >>$OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
+    }
+    exec('echo rm diy* >>$OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
+    exec('chmod +x $OPENSHIFT_REPO_DIR.openshift/cron/hourly/http_activate');
 }
 else {
     $handle = fopen($filename, "r");
